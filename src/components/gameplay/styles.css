@@ -1,0 +1,320 @@
+/* styles.css - Modern Wordle Game Component Styles */
+.current-guess-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-light);
+}
+
+.underscores {
+  display: flex;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Inter', monospace;
+}
+
+.underscore {
+  display: inline-block;
+  min-width: 40px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  background: var(--glass-bg);
+  border: 2px solid var(--glass-border);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+}
+
+.underscore.blinking {
+  animation: blinkModern 1.5s infinite;
+  border-color: var(--fair-blue);
+  box-shadow: 0 0 20px var(--fair-blue-subtle);
+}
+
+@keyframes blinkModern {
+  0%, 50% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  51%, 100% { 
+    opacity: 0.4;
+    transform: scale(0.98);
+  }
+}
+
+.guess-history {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.guess-row {  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.guess-row:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.guess-letters {
+  display: flex;
+  gap: 8px;
+}
+
+.letter {
+  display: inline-block;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  animation: bounceIn 0.6s ease-out;
+}
+
+.letter.correct {
+  background: var(--guess-primary-gradient);
+  border-color: var(--fair-blue);
+  box-shadow: 0 0 20px var(--fair-blue-subtle);
+  color: var(--text-on-dark);
+}
+
+.letter.present {
+  background: var(--guess-secondary-gradient);
+  border-color: var(--fair-blue-light);
+  box-shadow: 0 0 20px rgba(107, 163, 232, 0.3);
+  color: var(--text-on-dark);
+}
+
+.letter.absent {
+  background: var(--glass-bg-dark);
+  border-color: var(--glass-border-subtle);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-light);
+}
+
+.word-length-feedback {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 0.5rem;
+  background: var(--glass-bg);
+  border-radius: 6px;
+  border: 1px solid var(--glass-border);
+}
+
+.length-indicator {
+  font-size: 16px;
+  margin-left: 6px;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.key {
+  min-width: 40px;
+  height: 48px;
+  border: 2px solid var(--glass-border-subtle);
+  background: var(--glass-bg);
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-light);
+}
+
+.key:hover {
+  background: var(--glass-bg-dark);
+  border-color: var(--fair-blue);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-1px);
+}
+
+.key.wide {
+  min-width: 80px;
+  font-size: 12px;
+}
+
+.key.correct {
+  background: var(--guess-primary-gradient);
+  color: var(--text-on-dark);
+  border-color: var(--fair-blue);
+  box-shadow: 0 0 15px var(--fair-blue-subtle);
+}
+
+.key.present {
+  background: var(--guess-secondary-gradient);
+  color: var(--text-on-dark);
+  border-color: var(--fair-blue-light);
+  box-shadow: 0 0 15px rgba(107, 163, 232, 0.3);
+}
+
+.key.absent {
+  background: var(--glass-bg-dark);
+  color: var(--text-secondary);
+  border-color: var(--glass-border-subtle);
+  box-shadow: var(--shadow-light);
+}
+
+.key.correct:hover {
+  background: var(--guess-primary-gradient);
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.key.present:hover {
+  background: var(--guess-secondary-gradient);
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.key.absent:hover {
+  background: var(--glass-bg-dark);
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+
+/* Victory Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.info-box {
+  max-width: 600px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(74, 144, 226, 0.4);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(74, 144, 226, 0.3);
+  animation: bounceIn 0.6s ease-out;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: #666;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: rgba(74, 144, 226, 0.1);
+  color: var(--fair-blue);
+  transform: scale(1.1);
+}
+
+.info-box h2 {
+  color: var(--fair-blue) !important;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+.info-box h3 {
+  color: #1a1a1a !important;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.info-box p {
+  color: #333 !important;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.info-box strong {
+  color: var(--fair-blue) !important;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .info-box {
+    max-width: 95vw;
+    padding: 1.5rem;
+  }
+  
+  .info-box h2 {
+    font-size: 1.3rem;
+  }
+  
+  .info-box h3 {
+    font-size: 1.1rem;
+  }
+  
+  .info-box p {
+    font-size: 1rem;
+  }
+}
