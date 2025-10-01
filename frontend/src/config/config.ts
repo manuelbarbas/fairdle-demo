@@ -14,7 +14,7 @@ if (!projectId) throw new Error('Project ID is not defined')
 
 // 1.5. Define FAIR Testnet chain
 const fairTestnet = defineChain({
-  id: 1328435889,
+  id: 935,
   name: 'FAIR Testnet',
   nativeCurrency: {
     name: 'FAIR',
@@ -23,13 +23,13 @@ const fairTestnet = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ['https://testnet-v1.skalenodes.com/v1/idealistic-dual-miram'],
+      http: ['https://testnet-rpc.fair.cloud/'],
     },
   },
   blockExplorers: {
     default: {
       name: 'FAIR Testnet Explorer',
-      url: 'https://idealistic-dual-miram.explorer.testnet-v1.skalenodes.com',
+      url: 'https://testnet-explorer.fair.cloud/',
     },
   },
   testnet: true,
@@ -44,20 +44,22 @@ const metadata = {
 }
 
 const chains = [fairTestnet] as const
+
 export const config = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
-  // Optional - Override createConnector
-  // createConnector,
+  connectors: [],
 })
 
 // 3. Create modal
 createWeb3Modal({
   wagmiConfig: config,
   projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true // Optional - false as default
+  enableAnalytics: true,
+  enableOnramp: false,
+  // Disable social authentication methods
+
 })
 
-export { WagmiProvider, QueryClient, QueryClientProvider, queryClient, fairTestnet }
+export { WagmiProvider, QueryClient, QueryClientProvider, queryClient, fairTestnet}

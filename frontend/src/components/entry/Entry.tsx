@@ -58,6 +58,8 @@ export const Entry: React.FC = () => {
 
       // Get the encoded function data from the contract
 
+      console.log("TRYING TO START THE GAME");
+
       const tx = await writeContract(walletClient, "startGame");
 
       console.log("START GAME", tx);

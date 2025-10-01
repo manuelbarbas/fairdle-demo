@@ -1,11 +1,10 @@
 import {toHex, encodeFunctionData, type WalletClient, type PublicClient } from 'viem'
 import {WordleGame_Contract_Address, WordleGame_Contract_ABI} from '../contracts'
-import {BITE} from "@skalenetwork/bite";
+//import {BITE} from "@skalenetwork/bite";
 
 // Contract configuration
 const CONTRACT_ADDRESS = WordleGame_Contract_Address as `0x${string}`
 const CONTRACT_ABI = WordleGame_Contract_ABI
-const chain_rpc = "https://testnet-v1.skalenodes.com/v1/idealistic-dual-miram";
 
 // Utility function to convert string to bytes32
 function stringToBytes32(str: string): `0x${string}` {
@@ -54,22 +53,30 @@ export async function writeContract(walletClient: WalletClient, funcName: string
     args: args
   });
 
-  const bite = new BITE(chain_rpc);
+  //const bite = new BITE(chain_rpc);
 
   const transaction = {
     to: CONTRACT_ADDRESS,
     data: data
   };
 
-  const encryptedTransaction = await bite.encryptTransaction(transaction);
+  //const encryptedTransaction = await bite.encryptTransaction(transaction);
 
-  const tx = await walletClient.sendTransaction({
+  /*const tx = await walletClient.sendTransaction({
     account: walletClient.account,
     to: encryptedTransaction.to as `0x${string}`,
     data: encryptedTransaction.data as `0x${string}`,
     gas: encryptedTransaction.gasLimit
     ? BigInt(encryptedTransaction.gasLimit)
     : undefined,
+    value: 0n,
+    chain: walletClient.chain
+  });*/
+
+    const tx = await walletClient.sendTransaction({
+    account: walletClient.account,
+    to: transaction.to as `0x${string}`,
+    data: transaction.data as `0x${string}`,
     value: 0n,
     chain: walletClient.chain
   });
