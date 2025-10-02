@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import {
   useAccount,
-  useDisconnect,
   useChainId,
   useSwitchChain,
   useWalletClient,
@@ -14,6 +13,7 @@ import WordleGame from "../gameplay/WordleGame";
 //import { startGame, getPlayerSatus, type PlayerStatus } from "../../web3/contracts/wordle/WordleGameContract"
 import { writeContract, readContract } from "../../web3/requests/contractCalls";
 import { fairTestnet } from "../../config/config";
+import { ensureSufficientGas } from "../../utils/gasManager";
 import "./Entry.css";
 
 type GameMode = "menu" | "daily" | "competitive" | "starting";
@@ -23,10 +23,10 @@ export const Entry: React.FC = () => {
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined);
   const [isStartingGame, setIsStartingGame] = useState(false);
   const [availableGuesses, setAvailableGuesses] = useState(7);
+  const [isCheckingGas, setIsCheckingGas] = useState(false);
   const MAX_GUESSES = 7;
-  const { open } = useWeb3Modal();
+  const { setShowAuthFlow, handleLogOut } = useDynamicContext();
   const { address, isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
   const { data: walletClient } = useWalletClient();
@@ -186,6 +186,20 @@ export const Entry: React.FC = () => {
 
   const isOnCorrectChain = chainId === fairTestnet.id;
 
+  // Check and distribute gas when wallet connects and is on correct chain
+  useEffect(() => {
+    const checkAndDistributeGas = async () => {
+      if (isConnected && isOnCorrectChain && address && publicClient && !isCheckingGas) {
+        
+          const result = await ensureSufficientGas(publicClient, address);
+        
+          console.log("result " , result);
+      }
+    };
+
+    checkAndDistributeGas();
+  }, [isConnected, isOnCorrectChain, address, publicClient]);
+
   // Function to update available guesses
   const updateAvailableGuesses = async () => {
     if (isConnected && walletClient && publicClient && address) {
@@ -234,14 +248,17 @@ export const Entry: React.FC = () => {
               </div>
               <button
                 className="disconnect-button"
-                onClick={() => disconnect()}
+                onClick={() => handleLogOut()}
               >
                 Disconnect
               </button>
             </div>
           </div>
         </div>
-        <WordleGame onGuessUpdate={updateAvailableGuesses} />
+        <WordleGame 
+          onGuessUpdate={updateAvailableGuesses}
+          onBackToMenu={handleBackToMenu}
+        />
       </div>
     );
   }
@@ -262,10 +279,14 @@ export const Entry: React.FC = () => {
 
         {/* Wallet Section */}
         <div className="wallet-section">
+          {/* Option 1: Use Dynamic's pre-built widget (uncomment to use) */}
+          {/* <DynamicWidget /> */}
+          
+          {/* Option 2: Custom wallet button (current implementation) */}
           {!isConnected ? (
             <button
               className="connect-wallet-button hover-lift"
-              onClick={() => open()}
+              onClick={() => setShowAuthFlow(true)}
             >
               Connect Wallet
             </button>
@@ -289,7 +310,7 @@ export const Entry: React.FC = () => {
               </div>
               <button
                 className="disconnect-button"
-                onClick={() => disconnect()}
+                onClick={() => handleLogOut()}
               >
                 Disconnect
               </button>

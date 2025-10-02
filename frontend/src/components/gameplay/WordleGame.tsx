@@ -29,9 +29,10 @@ interface GameState {
 
 interface WordleGameProps {
   onGuessUpdate?: () => void;
+  onBackToMenu?: () => void;
 }
 
-const WordleGame: React.FC<WordleGameProps> = ({ onGuessUpdate }) => {
+const WordleGame: React.FC<WordleGameProps> = ({ onGuessUpdate, onBackToMenu }) => {
   const [gameState, setGameState] = useState<GameState>({
     guesses: [],
     letterStatuses: [],
@@ -44,7 +45,7 @@ const WordleGame: React.FC<WordleGameProps> = ({ onGuessUpdate }) => {
     targetWord: null,
     lastGameDay: 0,
   });
-  const [showVictoryOverlay, setShowVictoryOverlay] = useState(false);
+  const [showEndGameOverlay, setShowEndGameOverlay] = useState(false);
 
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined);
   const { address } = useAccount();
@@ -115,6 +116,11 @@ const WordleGame: React.FC<WordleGameProps> = ({ onGuessUpdate }) => {
             gameStatus,
             targetWord,
           }));
+          
+          // Show end game overlay if game was already finished
+          if (gameStatus === "won" || gameStatus === "lost") {
+            setShowEndGameOverlay(true);
+          }
         } catch (error) {
           console.error("Error loading player game state:", error);
           toast.error("Failed to load game state.", {
@@ -363,9 +369,9 @@ const WordleGame: React.FC<WordleGameProps> = ({ onGuessUpdate }) => {
             currentGuess: "", // Reset current guess after submission
           }));
 
-          // Show victory overlay if won
-          if (gameStatus === "won") {
-            setShowVictoryOverlay(true);
+          // Show end game overlay if game is finished
+          if (gameStatus === "won" || gameStatus === "lost") {
+            setShowEndGameOverlay(true);
           }
 
           toast.success("✅ Guess confirmed!", {
@@ -410,67 +416,62 @@ const WordleGame: React.FC<WordleGameProps> = ({ onGuessUpdate }) => {
       )}
       <div className="guess-history mb-8 w-full">{renderGuessHistory()}</div>
 
-      {showVictoryOverlay && gameState.targetWord && (
-        <div className="overlay" onClick={() => setShowVictoryOverlay(false)}>
+      {/* Unified End Game Overlay */}
+      {showEndGameOverlay && (gameState.gameStatus === "won" || gameState.gameStatus === "lost") && (
+        <div className="overlay" onClick={() => {
+          setShowEndGameOverlay(false);
+          if (onBackToMenu) onBackToMenu();
+        }}>
           <div className="info-box" onClick={(e) => e.stopPropagation()}>
             <button
               className="close-button"
-              onClick={() => setShowVictoryOverlay(false)}
+              onClick={() => {
+                setShowEndGameOverlay(false);
+                if (onBackToMenu) onBackToMenu();
+              }}
               aria-label="Close"
             >
               ×
             </button>
-            <h2 className="text-center mb-2">Congratulations! </h2>
-            <h3 className="text-center mb-4">
-              You guessed the word: <strong>{"FAIR"}</strong>
-            </h3>
-            <p className="text-left">
-              <strong>Introducing FAIR: The First MEV Resistant L1</strong>
-              <br />
-              <br />
-              FAIR is a next-gen Layer 1 blockchain featuring native MEV
-              resistance, an optimized EVM, and on-chain AI capabilities. It
-              ensures fairness via encrypted execution using Blockchain
-              Integrated Threshold Encryption (BITE) at the consensus level,
-              preventing front-running, sandwich attacks, and censorship.
-              <br />
-              <br />
-              With FAIR and BITE protocol dApps like FAIRDLE work perfectly
-              since the daily random selected word as well as the players
-              guesses get encrypted and it's not possible to cheat by listening
-              to the mempool.
-              <br />
-              <br />
-              Don't miss this game changing technology and learn about{" "}
-              <a
-                href="https://www.fairchain.ai/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline"
-              >
-                FAIR
-              </a>.
-            </p>
+            
+            {gameState.gameStatus === "won" ? (
+              <>
+                <h2 className="text-center mb-2">🎉 Congratulations! 🎉</h2>
+                <h3 className="text-center mb-4">
+                  You guessed the word correctly!
+                </h3>
+                <p className="text-center">
+                  Amazing job! You've mastered today's challenge.
+                  Come back tomorrow for a new word!
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-center mb-2">Better luck next time! 😞</h2>
+                <p className="text-center">
+                  You've reached the guess limit for today.
+                  The word was challenging, but don't give up!
+                  Come back tomorrow for a new opportunity!
+                </p>
+              </>
+            )}
+      
           </div>
         </div>
       )}
 
-      {gameState.gameStatus === "lost" && (
-        <div className="text-center mb-8 p-6 glass-effect rounded-lg border border-glass-border">
-          <h2 className="text-2xl font-bold text-red-600 mb-2">
-            Better luck next time! 😞
-          </h2>
-          <p className="text-text-secondary">
-            You've reached the guess limit. Come back tomorrow!
-          </p>
-        </div>
-      )}
-
+      {/* Transaction Status */}
       {gameState.isSubmittingGuess && (
-        <div className="transaction-status mb-4 p-3 glass-effect rounded-lg">
-          <p className="text-center text-text-secondary">
-            ⏳ Submitting guess...
-          </p>
+        <div className="overlay">
+          <div className="info-box">
+            <h3 className="text-center mb-4">Submitting Guess</h3>
+            <p className="text-center text-text-secondary">
+              ⏳ Processing your guess on the blockchain...
+            </p>
+            <p className="text-center text-sm text-text-secondary mt-2">
+              Please wait while your transaction is confirmed.
+            </p>
+          </div>
         </div>
       )}
 
